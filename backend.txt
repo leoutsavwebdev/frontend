@@ -1,0 +1,280 @@
+================================================================================
+LEO CLUB EVENT PORTAL - BACKEND INTEGRATION DETAILS
+================================================================================
+
+This file describes all backend-related changes and the API contract the frontend
+expects from your backend (e.g. Railway Postgres).
+
+--------------------------------------------------------------------------------
+1. CONFIGURATION
+--------------------------------------------------------------------------------
+
+  File: src/config/api.js
+
+  - API_BASE: Read from environment variable VITE_API_URL (no trailing slash).
+    Example: https://your-app.railway.app/api
+
+  - AUTH_TOKEN_KEY: "leo_auth_token" - used to store the JWT/token in localStorage.
+
+  To enable the backend:
+    Create a .env file in the project root with:
+      VITE_API_URL=https://your-backend.railway.app/api
+
+  If VITE_API_URL is not set:
+    The app runs in offline mode - all data comes from localStorage and
+    sampleData.js. No API calls are made.
+
+--------------------------------------------------------------------------------
+2. API CLIENT (src/services/apiClient.js)
+--------------------------------------------------------------------------------
+
+  - request(method, path, body): Central fetch wrapper.
+    - Prepends API_BASE to path.
+    - Sets header: Authorization: Bearer <token> when token exists.
+    - Sets Content-Type: application/json.
+    - Parses JSON response.
+    - Throws ApiError(message, status, body) on non-2xx.
+
+  - getAuthToken() / setAuthToken(token): Read/write token in localStorage.
+
+  - api.get(path), api.post(path, body), api.put(path, body),
+    api.patch(path, body), api.delete(path): Convenience methods.
+
+--------------------------------------------------------------------------------
+3. SERVICE LAYER (src/services/)
+--------------------------------------------------------------------------------
+
+  All backend calls go through these modules. No fetch/axios elsewhere.
+
+  authService.js
+    - login(role, email, password?, profile?)  -> POST /auth/login
+    - registerStudent(email, profile)           -> POST /auth/register
+    - getMe()                                   -> GET /auth/me
+    - logout()                                  -> clears token
+
+  eventsService.js
+    - getAllEvents()                            -> GET /events
+    - getEventById(id)                          -> GET /events/:id
+    - createEvent(payload)                       -> POST /events
+    - updateEvent(id, payload)                  -> PUT /events/:id
+    - updateEventStatus(id, status)             -> PATCH /events/:id/status
+
+  participationsService.js
+    - getParticipationsByEvent(eventId)         -> GET /events/:eventId/participations
+    - getAllParticipations()                    -> GET /participations
+    - createParticipation(body)                 -> POST /participations
+    - deleteParticipation(id)                   -> DELETE /participations/:id
+    - updateParticipation(id, payload)          -> PATCH /participations/:id
+
+  paymentsService.js
+    - createPayment(body)                        -> POST /payments
+    - getRevenueSummary()                       -> GET /payments/summary
+
+  eventCoordinatorsService.js
+    - getCoordinatorsByEvent(eventId)           -> GET /events/:eventId/coordinators
+    - getMyCoordinatorEventIds()                -> GET /event-coordinators/me
+    - joinEvent(eventId)                        -> POST /event-coordinators
+    - leaveEvent(eventId)                       -> DELETE /event-coordinators?eventId= (backend removes current user's assignment)
+    - listCoordinators()                        -> GET /users/coordinators
+    - updateCoordinatorStatus(id, status)       -> PATCH /users/coordinators/:id/status
+
+  leaderboardService.js
+    - getLeaderboard(eventId)                   -> GET /events/:eventId/leaderboard
+    - setLeaderboardEntry(eventId, participantId, payload) -> PATCH /events/:eventId/leaderboard
+    - getWinners(eventId)                       -> GET /events/:eventId/winners
+    - completeEvent(eventId, winnerParticipantIds) -> PATCH /events/:eventId/complete
+
+--------------------------------------------------------------------------------
+4. BACKEND API CONTRACT - ENDPOINTS TO IMPLEMENT
+--------------------------------------------------------------------------------
+
+  All paths are relative to VITE_API_URL. Auth header: Authorization: Bearer <token>
+
+  ---- AUTH (Users table) ----
+  POST   /auth/login
+    Body: { role, email, password?, profile? }
+    Response: { token?, user?, needsProfile? }
+    Note: For student, if not registered return { needsProfile: true }. Else { token, user }.
+
+  POST   /auth/register
+    Body: { email, name, rollNo, phone }
+    Response: { token, user }
+    Note: Backend generates LEO ID for student.
+
+  GET    /auth/me
+    Headers: Authorization: Bearer <token>
+    Response: { user } or user object
+
+  User object (min): id, email, role (student|coordinator|admin), name?, leoId?, rollNo?, phone?, status? (for coord: pending|approved|rejected)
+
+  ---- EVENTS (Events table) ----
+  GET    /events                    -> Array of event objects
+  GET    /events/:id                -> Single event object
+  POST   /events                    -> Body: title, description, date, time, venue, category, status, cost, rules, teamSize
+  PUT    /events/:id                -> Same body as POST
+  PATCH  /events/:id/status         -> Body: { status } (open|ongoing|closed|completed)
+
+  Event object: id, title, description, date, time, venue, category, status, cost, rules, teamSize, createdAt?
+
+  ---- PARTICIPATIONS (Participations table) ----
+  GET    /events/:eventId/participations  -> Array of participation objects
+  GET    /participations                   -> Array of all (admin); each has eventId
+  POST   /participations                   -> Body: { eventId, userId?, paymentType?, transactionId?, screenshot? }
+  DELETE /participations/:id
+  PATCH  /participations/:id               -> Body: { arrived?, paymentStatus? }
+
+  Participation object: id, eventId, userId (or studentId), name, leoId, rollNo?, paymentType, paymentStatus?, arrived?, screenshot?, transactionId?, registeredAt?
+
+  ---- PAYMENTS (Payments table) ----
+  POST   /payments                  -> Body: { participationId, transactionId, screenshot? }
+  GET    /payments/summary          -> { total, byEvent: { [eventId]: { count, amount, title? } } }
+
+  ---- EVENT COORDINATORS (EventCoordinators table) ----
+  GET    /events/:eventId/coordinators   -> Array of coordinator assignments (name, phone)
+  GET    /event-coordinators/me          -> Array of event IDs or { eventIds: [] }
+  POST   /event-coordinators             -> Body: { eventId }
+  DELETE /event-coordinators/:id
+  DELETE /event-coordinators?eventId=:eventId   (optional: remove current user's assignment)
+
+  ---- ADMIN - COORDINATOR APPROVAL (Users) ----
+  GET    /users/coordinators              -> Array of coordinator users
+  PATCH  /users/coordinators/:id/status   -> Body: { status: "approved" | "rejected" }
+
+  ---- LEADERBOARD & WINNERS ----
+  GET    /events/:eventId/leaderboard     -> Array of { participantId, name, leoId, rollNo?, score } sorted by score desc
+  PATCH  /events/:eventId/leaderboard     -> Body: { participantId, score } (upsert)
+  GET    /events/:eventId/winners         -> Array of participant IDs (top 3)
+  PATCH  /events/:eventId/complete        -> Body: { winnerParticipantIds: [] } (marks event completed, stores winners)
+
+  ---- EVENT PASSES (optional) ----
+  GET    /events/:eventId/passes   -> If EventPasses table exists; frontend uses single cost per event otherwise.
+
+--------------------------------------------------------------------------------
+5. HOW THE FRONTEND USES THE BACKEND
+--------------------------------------------------------------------------------
+
+  - When VITE_API_URL is set:
+    * AppData loads events from GET /events on mount.
+    * After login, refreshDataForUser(user) loads participations, coordinators, my coord events (by role).
+    * Auth: login/register call API; token stored; GET /auth/me on load if token exists.
+    * All mutations (create event, register, join event, approve coord, complete event, etc.) call the corresponding service; service calls API then updates local state or refetches.
+
+  - Token: Stored in localStorage under key "leo_auth_token". Sent as "Authorization: Bearer <token>" on every request.
+
+  - Errors: Non-2xx responses throw ApiError(message, status, body). UI shows messages and loading states where implemented.
+
+--------------------------------------------------------------------------------
+6. DATABASE TABLES REFERENCED
+--------------------------------------------------------------------------------
+
+  Users, Events, EventPasses (optional), Participations, Payments, EventCoordinators.
+  Leaderboard/Winners may be separate tables or derived; frontend expects the endpoints above.
+
+--------------------------------------------------------------------------------
+7. FILES ADDED/MODIFIED FOR BACKEND
+--------------------------------------------------------------------------------
+
+  New:
+    src/config/api.js
+    src/services/apiClient.js
+    src/services/authService.js
+    src/services/eventsService.js
+    src/services/participationsService.js
+    src/services/paymentsService.js
+    src/services/eventCoordinatorsService.js
+    src/services/leaderboardService.js
+    src/services/index.js
+    src/components/DataHydrator.jsx
+    docs/API_CONTRACT.md
+    .env.example
+
+  Modified:
+    src/context/AppData.jsx    - API mode, fetch on load, refreshDataForUser, async actions
+    src/context/AuthContext.jsx - API login/register/getMe when useApi, token handling
+    src/App.jsx                 - DataHydrator
+    src/pages/Login.jsx         - Async login, loading state
+    src/pages/Events.jsx        - Use context only, loading/error
+    src/pages/home.jsx          - Use context only for featured events
+    src/pages/EventDetails.jsx  - getEventById when API, event not found
+    src/pages/StudentDashboard.jsx   - createParticipation, deleteParticipation, createPayment
+    src/pages/CoordinatorDashboard.jsx - join/leave event, updateParticipationStatus
+    src/pages/AdminDashboard.jsx      - createEvent, updateEvent, updateEventStatus, updateCoordinatorStatus, completeEventWithWinners
+    src/data/sampleData.js      - Comment: used only when VITE_API_URL not set
+
+--------------------------------------------------------------------------------
+8. BACKEND IMPLEMENTATION (Node.js + Express) - WHAT WAS DONE
+--------------------------------------------------------------------------------
+
+  A full production-ready backend exists under: light-house/vite-project/backend/
+
+  Project structure:
+    backend/
+      index.js                 - Express app, CORS, JSON, mounts all routes, /health, error handler
+      package.json             - express, cors, dotenv, pg, jsonwebtoken, bcrypt; scripts: start, dev
+      .env.example             - DATABASE_URL, JWT_SECRET, PORT
+      config/db.js             - pg Pool with DATABASE_URL; SSL (rejectUnauthorized: false) when not localhost
+      middleware/authMiddleware.js - authMiddleware (Bearer token -> req.user), requireRole(...roles)
+      utils/generateLeoId.js   - LEO_ + 10 random alphanumeric for student registration
+      schema.sql               - PostgreSQL DDL: users, events, participations, payments, event_coordinators, leaderboard, winners; indexes
+      SETUP.md                 - Setup instructions (run schema, .env, npm install, npm start)
+
+    routes/
+      authRoutes.js            - POST /auth/login, POST /auth/register, GET /auth/me
+      eventsRoutes.js          - GET /events, GET /events/:id; GET/POST/PUT/PATCH under /events; nested:
+                                 GET /events/:eventId/participations, /events/:eventId/coordinators,
+                                 GET|PATCH /events/:eventId/leaderboard, GET /events/:eventId/winners,
+                                 PATCH /events/:eventId/complete, GET /events/:eventId/passes
+      participationsRoutes.js  - GET /participations (admin), POST, DELETE /:id, PATCH /:id
+      paymentsRoutes.js       - POST /payments, GET /payments/summary (admin)
+      coordinatorsRoutes.js   - GET /event-coordinators/me, POST, DELETE /:id, DELETE ?eventId=
+      usersRoutes.js          - GET /users/coordinators, PATCH /users/coordinators/:id/status (admin)
+      leaderboardRoutes.js    - (logic mounted under events; file exists for reference)
+
+    controllers/
+      authController.js        - login (student: needsProfile or token+user; coord/admin: password + coord approved), register (leoId generated), me
+      eventsController.js     - getAll, getById, create, update, updateStatus, getPasses (returns [] until EventPasses table)
+      participationsController.js - getByEvent, getAll, create, remove (own or admin/coord), update (own or admin/coord)
+      paymentsController.js   - create (sets participation payment_status paid), getSummary by event
+      coordinatorsController.js - getCoordinatorsByEvent, getMyEventIds ({ eventIds }), join (max 2), leaveById, leaveByEventId, listCoordinators, updateCoordinatorStatus
+      leaderboardController.js - getLeaderboard, upsertScore, getWinners, completeEvent
+
+  All contract endpoints are implemented. Responses use camelCase (eventId, userId, leoId, rollNo, etc.).
+  Auth: JWT in Authorization: Bearer <token>; roles: student, coordinator, admin.
+
+--------------------------------------------------------------------------------
+9. CAN YOU WORK WITH BOTH FRONTEND AND BACKEND NOW?
+--------------------------------------------------------------------------------
+
+  YES. You can run the full stack:
+
+  1. Backend:
+     - Create .env in backend/ with DATABASE_URL, JWT_SECRET, PORT=5000 (see SETUP.md).
+     - Run: psql "$DATABASE_URL" -f backend/schema.sql  (once)
+     - Run: cd backend && npm install && npm start
+
+  2. Frontend:
+     - In project root (vite-project/), create .env with:
+         VITE_API_URL=http://localhost:5000
+       (No trailing slash; backend has no /api prefix.)
+     - Run: npm run dev
+
+  3. Open the app; login/register and use events, participations, payments, coordinators, leaderboard as per the UI.
+
+  REMAINING / OPTIONAL:
+  - EventPasses: GET /events/:eventId/passes returns [] until you add an event_passes table and implement it.
+  - Razorpay: env has RAZORPAY_KEY_*; backend does not yet call Razorpay APIs (payments are manual: participationId + transactionId + screenshot).
+  - First-run: Create at least one admin user (e.g. manually in DB or a seed script) to manage events and approve coordinators.
+
+--------------------------------------------------------------------------------
+10. FIXES APPLIED
+--------------------------------------------------------------------------------
+
+  - Participations: DELETE and PATCH now enforce auth — students can only delete/update their own; admin/coordinator can any.
+  - GET /participations: Admin gets all; student gets only their own (so student dashboard can load "my participations").
+  - Event coordinators leave: Frontend leaveEvent() now uses DELETE /event-coordinators?eventId=... only (no need to resolve assignment id).
+  - GET /event-coordinators/me returns { eventIds: [] } for consistent frontend consumption.
+  - GET /events/:eventId/passes added; returns [] until EventPasses table exists.
+
+--------------------------------------------------------------------------------
+END OF BACKEND DETAILS
+================================================================================

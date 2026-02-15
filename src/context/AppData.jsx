@@ -180,24 +180,13 @@ export function AppDataProvider({ children }) {
         if (user.role === "coordinator") {
           const eventIds = await coordinatorsApi.getMyCoordinatorEventIds().catch(() => []);
           setCoordActive((c) => ({ ...(c || {}), [user.id]: eventIds }));
-          const partsByEvent = {};
+          const allParts = [];
           for (const eid of eventIds) {
             const list = await participationsApi.getParticipationsByEvent(eid).catch(() => []);
-            partsByEvent[eid] = (list || []).map((p) => ({
-              id: p.id,
-              studentId: p.userId ?? p.studentId,
-              name: p.name,
-              leoId: p.leoId,
-              rollNo: p.rollNo,
-              paymentType: p.paymentType,
-              paymentStatus: p.paymentStatus,
-              arrived: p.arrived,
-              screenshot: p.screenshot,
-              transactionId: p.transactionId,
-              registeredAt: p.registeredAt,
-            }));
+            (list || []).forEach((p) => allParts.push({ ...p, eventId: eid }));
           }
-          setParticipants((p) => ({ ...(p || {}), ...partsByEvent }));
+          const normalized = normalizeParticipations(allParts);
+          setParticipants((p) => ({ ...(p || {}), ...normalized }));
         }
         if (user.role === "student") {
           const partList = await participationsApi.getAllParticipations().catch(() => []);

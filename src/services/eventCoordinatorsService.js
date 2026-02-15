@@ -16,11 +16,7 @@ export async function joinEvent(eventId) {
 }
 
 export async function leaveEvent(eventId) {
-  const data = await api.get(`/events/${eventId}/coordinators`);
-  const list = Array.isArray(data) ? data : data?.coordinators ?? [];
-  const me = list.find((c) => c.userId || c.id);
-  if (me?.id) await api.delete(`/event-coordinators/${me.id}`);
-  else await api.delete(`/event-coordinators?eventId=${eventId}`);
+  await api.delete(`/event-coordinators?eventId=${eventId}`);
 }
 
 export async function getMyCoordinatorEventIds() {
