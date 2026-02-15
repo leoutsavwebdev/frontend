@@ -241,9 +241,7 @@ export default function Login() {
           </form>
         )}
 
-        <p className="login-hint">
-          Sample: student@test.com (no password) · coord@test.com / admin@test.com — password: password
-        </p>
+        
       </div>
     </div>
   );

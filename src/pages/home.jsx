@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppData } from "../context/AppData";
 import Footer from "../components/Footer";
+import Section1 from "../components/Section1";
 import "./home.css";
 
 const Home = () => {
@@ -11,7 +12,9 @@ const Home = () => {
   const [mouseSpot, setMouseSpot] = useState({ x: 0.5, y: 0.5 });
 
   useEffect(() => {
-    const open = (events || []).filter((e) => !e.status || e.status === "open" || e.status === "ongoing");
+    const open = (events || []).filter(
+      (e) => !e.status || e.status === "open" || e.status === "ongoing"
+    );
     setFeaturedList(open.slice(0, 2));
   }, [events]);
 
@@ -21,6 +24,7 @@ const Home = () => {
     if (!canvas || !section) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
     let particlesArray = [];
     const numberOfParticles = 100;
 
@@ -58,7 +62,9 @@ const Home = () => {
 
     function init() {
       particlesArray = [];
-      for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle());
+      for (let i = 0; i < numberOfParticles; i++) {
+        particlesArray.push(new Particle());
+      }
     }
 
     function animate() {
@@ -72,7 +78,10 @@ const Home = () => {
 
     init();
     animate();
-    return () => window.removeEventListener("resize", resizeCanvas);
+
+    return () => {
+      window.removeEventListener("resize", resizeCanvas);
+    };
   }, []);
 
   const handleHeroMouseMove = (e) => {
@@ -85,7 +94,8 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      {/* HERO SECTION with Login top-right and mouse-follow lighting */}
+
+      {/* HERO SECTION */}
       <section
         className="leo-typewriter-section hero-lighting"
         onMouseMove={handleHeroMouseMove}
@@ -93,70 +103,120 @@ const Home = () => {
         <div
           className="hero-spotlight"
           style={{
-            background: `radial-gradient(circle 180px at ${mouseSpot.x * 100}% ${mouseSpot.y * 100}%, rgba(0,170,255,0.25), transparent 60%)`,
+            background: `radial-gradient(circle 180px at ${
+              mouseSpot.x * 100
+            }% ${mouseSpot.y * 100}%, rgba(0,170,255,0.25), transparent 60%)`,
           }}
           aria-hidden
         />
         <canvas id="leo-particle-canvas"></canvas>
-        <Link to="/login" className="home-login-link">Login</Link>
-        <div className="leo-typewriter">
-          <h1 className="hero-neon-title">LEO CLUB OF CEG</h1>
-          <p className="leo-subtitle">Leadership Experience Opportunity</p>
-        </div>
-      </section>
 
-      {/* PURPOSE SECTION - second card */}
-      <section className="purpose-section">
-        <div className="purpose-content">
-          <h1>Empowering Change Through Innovation</h1>
-          <br />
-          <h4>
-            <span className="glow-line">
-              "Leadership is not a position or a title; it is an action and an
-              example."
-            </span>
-          </h4>
-          <br />
-          <p>
-            <strong>LEO Club of CEG</strong> is a student body of{" "}
-            <strong>College of Engineering Guindy</strong>, which endeavours to
-            enhance the leadership skills of students by providing them various
-            opportunities and experiences for their overall development.
+        <Link to="/login" className="home-login-link">
+          Login
+        </Link>
+
+        <div className="leo-typewriter">
+          <h1 className="hero-neon-title">LEO Utsav'26</h1>
+          <p className="leo-subtitle">
+            Leo Club of CEG
+            </p>
+            <p className="leo-subtitle">
+            Leadership Experience Opportunity
           </p>
         </div>
       </section>
 
-      {/* FEATURED EVENTS - same as events section, first 2 only + Explore button */}
+      {/* ✅ SECTION1 ADDED AS SECOND CARD */}
+      <section className="section1-wrapper">
+        <Section1 />
+      </section>
+      {/* PURPOSE SECTION - second card */} 
+      <section className="purpose-section">
+  <div className="purpose-content">
+    <h1>Empowering Change Through Innovation</h1>
+
+    <br />
+
+    <h4>
+      <span className="glow-line">
+        "Celebrate. Compete. Contribute."
+      </span>
+    </h4>
+
+    <br />
+
+    <p>
+      <strong>LEO UTSAV</strong> is more than just an event — it is a vibrant 
+      celebration of talent, creativity, and purpose. Hosted by the{" "}
+      <strong>LEO Club of CEG</strong>, the student body of{" "}
+      <strong>College of Engineering, Guindy</strong>, UTSAV brings together 
+      students from across campuses to participate, perform, and make an impact.
+    </p>
+
+    <br />
+
+    <p>
+      From exciting competitions and cultural showcases to meaningful 
+      initiatives, UTSAV blends celebration with contribution. It is a space 
+      where passion meets purpose and every moment adds to a larger cause.
+    </p>
+
+    <br />
+
+    <p>
+      <strong>Event Schedule:</strong><br />
+        <span className="schedule-date">Feb 16 & 17 – 4:00 PM to 7:30 PM</span><br />
+  <span className="schedule-date">Feb 18 – 9:00 AM to 7:30 PM</span>
+    </p>
+  </div>
+</section>
+
+      {/* FEATURED EVENTS */}
       <section className="featured-events-section">
         <h2 className="featured-title">Featured Events</h2>
         <p className="featured-subtitle">
-          Don&apos;t miss out on these exciting events! Register now to secure your
-          spot.
+          Don&apos;t miss out on these exciting events! Register now to secure your spot.
         </p>
 
         <div className="events-grid">
           {featuredList.map((event) => (
             <div key={event.id} className="event-card">
-              <div className="event-tag">{event.category || "Event"}</div>
+              <div className="event-tag">
+                {event.category || "Event"}
+              </div>
+
               <h3>{event.title}</h3>
               <p>{event.description}</p>
+
               <div className="event-details">
                 <span>📅 {event.date} • {event.time}</span>
                 <span>📍 {event.venue}</span>
               </div>
+
               <div className="event-footer">
-                <span className={event.cost === 0 ? "price free" : "price"}>
-                  {event.cost === 0 ? "Free" : `₹ ${event.cost ?? 10}`}
+                <span
+                  className={event.cost === 0 ? "price free" : "price"}
+                >
+                  {event.cost === 0
+                    ? "Free"
+                    : `₹ ${event.cost ?? 10}`}
                 </span>
-                <button type="button" onClick={() => navigate(`/events/${event.id}`)}>
+
+                <button
+                  type="button"
+                  onClick={() => navigate(`/events/${event.id}`)}
+                >
                   View Details →
                 </button>
               </div>
             </div>
           ))}
         </div>
+
         <div className="home-explore-wrap">
-          <Link to="/events" className="home-explore-btn">Explore Events</Link>
+          <Link to="/events" className="home-explore-btn">
+            Explore Events
+          </Link>
         </div>
       </section>
 

@@ -23,26 +23,58 @@ body {
 }
 
 /* === Hero Section - centered on page, mouse-follow lighting === */
+/* === Hero Section - perfectly centered === */
 .leo-typewriter-section {
   position: relative;
   width: 100%;
   min-height: 80vh;
-  background: transparent;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  place-items: center;   /* TRUE center alignment */
   text-align: center;
   padding: 40px 20px;
   overflow: hidden;
   box-sizing: border-box;
 }
 
+/* Spotlight layer */
 .hero-spotlight {
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  transition: opacity 0.2s ease;
+}
+
+/* Canvas should not affect layout */
+#leo-particle-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Center content wrapper */
+.leo-typewriter {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Title center lock */
+.leo-typewriter h1.hero-neon-title {
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Subtitle center lock */
+.leo-subtitle {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .leo-typewriter-section .leo-typewriter {
@@ -168,7 +200,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 60px 20px;
+  padding: 40px 20px;
   text-align: center;
   color: var(--text-light);
   border-top: 1px solid rgba(0, 170, 255, 0.15);
@@ -403,8 +435,9 @@ strong {
 
 .events-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  justify-content: center;
 }
 
 .event-card {
@@ -495,4 +528,8 @@ strong {
   box-shadow: 0 0 28px var(--glow-blue);
   transform: translateY(-2px);
   background: var(--neon-blue);
+}
+.schedule-date {
+  color: #ffffff;   /* pure white */
+  font-weight: 700; /* bold */
 }

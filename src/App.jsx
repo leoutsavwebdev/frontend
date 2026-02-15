@@ -19,7 +19,8 @@ import "./App.css";
 function ProtectedRoute({ children, role }) {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
-  if (role && user.role !== role) return <Navigate to="/" replace />;
+  if (role && user.role?.toLowerCase() !== role.toLowerCase())
+    return <Navigate to="/" replace />;
   return children;
 }
 

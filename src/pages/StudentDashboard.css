@@ -1,7 +1,7 @@
 .student-dashboard {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 2rem;
+   max-width: 1150px;      /* wider */
+  margin: 3rem auto;      /* push away from navbar */
+  padding: 2rem 3rem;     /* better side spacing */
 }
 
 /* Darkened elegant cards */
@@ -38,10 +38,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  gap: 1rem;
+  margin-bottom: 2.5rem;   /* more breathing space */
+  padding: 1.5rem 2rem;
+  border-radius: 18px;
+  background: rgba(5, 8, 18, 0.9);
+  border: 1px solid rgba(0, 170, 255, 0.25);
 }
+
 
 .sd-header h1 {
   color: var(--neon-blue);
@@ -62,7 +65,7 @@
 
 /* Profile section */
 .sd-profile-section {
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 .sd-profile-section h2 {
@@ -78,9 +81,10 @@
 
 .sd-profile-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
 }
+
 
 .sd-profile-item {
   display: flex;
@@ -146,7 +150,7 @@
 }
 
 .sd-section {
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 .sd-section h2 {
@@ -172,13 +176,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 14px;
+  gap: 20px;
+  padding: 18px 22px;
   background: rgba(5, 8, 18, 0.85);
   border: 1px solid rgba(0, 170, 255, 0.25);
-  border-radius: 10px;
-  margin-bottom: 8px;
+  border-radius: 14px;
+  margin-bottom: 16px;
   color: var(--text-light);
 }
+
 
 .sd-meta {
   color: var(--text-muted);
@@ -433,4 +439,26 @@
   padding: 0.5rem 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
+}
+
+.sd-reg-item > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sd-reg-title {
+  font-size: 1.05rem;
+  letter-spacing: 0.3px;
+}
+
+.sd-meta {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.sd-payment-mode {
+  margin-top: 2px;
+  font-size: 0.85rem;
+  opacity: 0.75;
 }

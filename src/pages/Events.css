@@ -48,17 +48,9 @@
   box-shadow: 0 0 30px var(--glow-blue), 0 0 60px rgba(0, 170, 255, 0.15);
 }
 
-.event-image {
-  height: 140px;
-  background: linear-gradient(135deg, var(--space-bg-4), var(--space-bg-3));
-  position: relative;
-  border-bottom: 1px solid rgba(0, 170, 255, 0.2);
-}
 
 .category-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
+  align-self: flex-end;
   background: transparent;
   color: var(--neon-golden);
   padding: 4px 10px;
@@ -66,7 +58,9 @@
   font-size: 0.75rem;
   border: 1px solid var(--neon-golden);
   box-shadow: 0 0 10px var(--glow-golden);
+  margin-bottom: 10px;
 }
+
 
 .event-content {
   padding: 1.5rem;
@@ -106,15 +100,16 @@
 }
 
 .view-btn {
-  background: transparent;
+  background: transparent;   /* stays transparent normally */
   border: 1px solid var(--neon-blue);
   padding: 8px 14px;
   border-radius: 10px;
   cursor: pointer;
-  color: var(--neon-blue);
+  color: #ffffff;            /* TEXT ALWAYS VISIBLE */
+  font-weight: 500;
   transition: all 0.3s ease;
-  box-shadow: 0 0 10px var(--glow-blue);
 }
+
 
 .view-btn:hover {
   background: var(--neon-blue);

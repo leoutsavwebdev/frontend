@@ -98,34 +98,23 @@ export default function StudentDashboard() {
     setParticipants(next);
   };
 
-  const handlePayNowSubmit = async (e) => {
-    e.preventDefault();
-    if (!modal?.event) return;
-    if (!paymentProof.transactionId.trim() || !paymentProof.screenshot) return;
-    if (useApi) {
-      setActionError(null);
-      setActionLoading(true);
-      try {
-        const created = await createParticipation({
-          eventId: modal.event.id,
-          paymentType: "pay_now",
-          transactionId: paymentProof.transactionId.trim(),
-          screenshot: paymentProof.screenshot,
-        });
-        if (created?.id) await createPayment({ participationId: created.id, transactionId: paymentProof.transactionId.trim(), screenshot: paymentProof.screenshot });
-        setModal(null);
-        setPaymentProof({ transactionId: "", screenshot: null });
-      } catch (err) {
-        setActionError(err?.message || "Registration failed");
-      } finally {
-        setActionLoading(false);
-      }
-      return;
-    }
-    addParticipant(modal.event, "pay_now", paymentProof.transactionId.trim(), paymentProof.screenshot);
-    setModal(null);
-    setPaymentProof({ transactionId: "", screenshot: null });
-  };
+  const handlePayNowSubmit = (e) => {
+  e.preventDefault();
+  if (!modal?.event) return;
+  if (!paymentProof.transactionId.trim() || !paymentProof.screenshot) return;
+
+  // EXACT SAME behavior as pay at arrival
+  addParticipant(
+    modal.event,
+    "pay_now",
+    paymentProof.transactionId.trim(),
+    paymentProof.screenshot
+  );
+
+  setModal(null);
+  setPaymentProof({ transactionId: "", screenshot: null });
+};
+
 
   const handleScreenshotChange = (e) => {
     const file = e.target.files?.[0];
