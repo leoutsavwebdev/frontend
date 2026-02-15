@@ -1,0 +1,176 @@
+/* =========================
+   Global Reset & Black + Neon Space Theme
+========================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Space blacks */
+  --space-bg: #050508;
+  --space-bg-2: #0a0a12;
+  --space-bg-3: #0d0d18;
+  --space-bg-4: #12121f;
+  /* Neon accents – blue, golden, silver, orange only */
+  --neon-blue: #00aaff;
+  --neon-blue-dim: #0088cc;
+  --neon-golden: #ffd700;
+  --neon-golden-dim: #e6c200;
+  --neon-silver: #e0e0e0;
+  --neon-silver-dim: #b0b0b0;
+  --neon-orange: #ff8c00;
+  --neon-orange-dim: #e67e00;
+  /* Glows */
+  --glow-blue: rgba(0, 170, 255, 0.5);
+  --glow-golden: rgba(255, 215, 0, 0.5);
+  --glow-silver: rgba(224, 224, 224, 0.4);
+  --glow-orange: rgba(255, 140, 0, 0.5);
+  /* Text */
+  --text-light: #e8e8e8;
+  --text-bright: #ffffff;
+  --text-muted: #8892a0;
+  --text-dark: #050508;
+  /* Legacy compatibility */
+  --primary: var(--space-bg-2);
+  --secondary: var(--space-bg-3);
+  --accent: var(--neon-blue);
+  --light-accent: var(--neon-golden);
+  --light-blue: var(--neon-blue);
+  --sky-white: rgba(255, 255, 255, 0.15);
+  --overlay: rgba(0, 0, 0, 0.7);
+}
+
+/* =========================
+   Base Layout
+========================= */
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  background-color: var(--space-bg);
+  font-family: 'Segoe UI', sans-serif;
+  overflow-x: hidden;
+  color: var(--text-light);
+}
+
+/* Root container */
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
+/* =========================
+   App wrapper & global particle background
+========================= */
+
+.app-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+}
+
+.global-particle-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  background: var(--space-bg);
+}
+
+.global-particle-bg canvas,
+.global-particle-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* =========================
+   Main Content Area
+========================= */
+
+.main-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding-top: 50px;
+  min-height: 100vh;
+  background: transparent;
+}
+
+.main-content > * {
+  width: 100%;
+}
+
+/* =========================
+   Media Safety
+========================= */
+
+img,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+section {
+  scroll-margin-top: 60px;
+}
+
+/* =========================
+   Global card & button effects
+========================= */
+
+.card-effect {
+  background: rgba(10, 10, 18, 0.75);
+  border: 1px solid rgba(0, 170, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 170, 255, 0.06);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.card-effect:hover {
+  border-color: rgba(0, 170, 255, 0.35);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.5), 0 0 28px rgba(0, 170, 255, 0.1);
+}
+
+.btn-visibility {
+  border-width: 1px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-visibility:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 170, 255, 0.25);
+}
+
+.student-btn {
+  background: linear-gradient(135deg, var(--neon-blue), var(--neon-blue-dim));
+  color: var(--space-bg);
+  border-color: var(--neon-blue);
+}
+
+.coord-btn {
+  background: linear-gradient(135deg, var(--neon-golden), var(--neon-golden-dim));
+  color: var(--space-bg);
+  border-color: var(--neon-golden);
+}
+
+.admin-btn {
+  background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dim));
+  color: var(--space-bg);
+  border-color: var(--neon-orange);
+}

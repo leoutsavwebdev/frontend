@@ -1,0 +1,20 @@
+[
+  {
+    "id": "battle-of-bands",
+    "title": "Battle of Bands",
+    "description": "Showcase your musical talent in this epic band competition. Bands of 3-8 members can participate.",
+    "date": "15 Feb 2026",
+    "time": "6:00 PM",
+    "venue": "Main Auditorium",
+    "category": "Music"
+  },
+  {
+    "id": "code-sprint",
+    "title": "Code Sprint",
+    "description": "A 3-hour competitive coding challenge. Solve algorithmic problems and climb the leaderboard.",
+    "date": "16 Feb 2026",
+    "time": "10:00 AM",
+    "venue": "Computer Lab 101",
+    "category": "Technical"
+  }
+]

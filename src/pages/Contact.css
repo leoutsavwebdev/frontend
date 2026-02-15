@@ -1,0 +1,94 @@
+/* Contact - black + neon (blue, golden, silver, orange only, no purple) */
+
+.contact-page {
+  background: transparent;
+  color: var(--text-light);
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+  position: relative;
+  overflow: hidden;
+  padding: 3rem 2rem;
+  z-index: 0;
+}
+
+.contact-title {
+  font-size: 2.5rem;
+  text-align: center;
+  margin: 3rem 0 2rem;
+  color: var(--neon-blue);
+  font-family: 'Cinzel', serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px var(--glow-blue), 0 0 40px rgba(0, 170, 255, 0.2);
+}
+
+.contact-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.map-container {
+  flex: 1;
+  min-height: 300px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 170, 255, 0.2);
+  box-shadow: 0 0 20px var(--glow-blue);
+}
+
+.contact-details {
+  flex: 1;
+  background: rgba(10, 10, 18, 0.6);
+  border: 1px solid rgba(0, 170, 255, 0.2);
+  padding: 2rem;
+  border-radius: 20px;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 0 20px rgba(0, 170, 255, 0.1);
+  text-align: center;
+}
+
+.contact-details p {
+  font-size: 1.1rem;
+  margin: 0.5rem 0;
+  color: var(--text-muted);
+}
+
+.contact-details a {
+  color: var(--neon-golden);
+  text-decoration: underline;
+  text-shadow: 0 0 8px var(--glow-golden);
+}
+
+.social-icons {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.social-icons img {
+  width: 40px;
+  height: 40px;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  filter: drop-shadow(0 0 6px var(--glow-blue));
+}
+
+.social-icons img:hover {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 12px var(--glow-golden));
+}
+
+@media (min-width: 768px) {
+  .contact-container {
+    flex-direction: row;
+  }
+
+  .map-container,
+  .contact-details {
+    flex: 1;
+  }
+}
